@@ -19,12 +19,12 @@ void CountPosition(const char *text, int *pos, int text_size)//part1
 	const int k = 500;
 	const int blocksize = 512;
 	int nblock = text_size / blocksize + (text_size % blocksize == 0?0:1);
-	part1_init<<<nblock, blocksize>>>(text, pos, text_size);
+	init<<<nblock, blocksize>>>(text, pos, text_size);
 	cudaDeviceSynchronize();
     for (int i = 2; i <= k; i++) 
 	{
       nblock = (text_size / i + 1) / blocksize + (text_size % blocksize == 0?0:1);
-      part1_kernel<<<nblock, blocksize>>>(text, pos, text_size, i);
+      kernel<<<nblock, blocksize>>>(text, pos, text_size, i);
       cudaDeviceSynchronize();
     }
 }
