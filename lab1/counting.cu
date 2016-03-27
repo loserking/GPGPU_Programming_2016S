@@ -38,20 +38,20 @@ void CountPosition(const char *text, int *pos, int text_size)//part1
    }
    else
    {
-	if (text[idx] == '\n') //white space output 0
-	{
-		pos[idx] = 0;
-	} 
-	else //not white space output 1
-	{
-		pos[idx] = 1;
-	}
+			if (text[idx] == '\n') //white space output 0
+			{
+				pos[idx] = 0;
+			} 
+			else //not white space output 1
+			{
+				pos[idx] = 1;
+			}
    }
  }
 __global__ void kernel(const char * text, int * pos, int n, int k) 
 {
    int idx = blockIdx.x * blockDim.x + threadIdx.x;
-   int idx = idx * k;
+   idx = idx * k;
    if (idx >= n) {
      return;
    }
@@ -72,14 +72,14 @@ __global__ void kernel(const char * text, int * pos, int n, int k)
 
 
  
-class isOne
+struct is_One
 {
-	public:
-	__device__ bool operator()(int x)
+	__host__ __device__
+	bool operator()(const int x)
 	{
 		return x == 1;
 	}
-}
+};
 
 int ExtractHead(const int *pos, int *head, int text_size)//part2
 {
@@ -90,7 +90,7 @@ int ExtractHead(const int *pos, int *head, int text_size)//part2
 	thrust::device_ptr<int> head_d(head), flag_d(buffer), cumsum_d(buffer+text_size);
 
 	// TODO
-	int head_end_d = thrust::copy_if(thrust::counting_iterator<int>(0), thrust::countung_iterator<int>(text_size), pos_d, head_d, isOne());
+	auto head_end_d = thrust::copy_if(thrust::counting_iterator<int>(0), thrust::counting_iterator<int>(text_size), pos_d, head_d, is_One());
 	nhead = head_end_d - head_d;
 	cudaFree(buffer);
 	return nhead;
