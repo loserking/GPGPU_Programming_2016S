@@ -3,32 +3,31 @@
 #include <cstdio>
 #include <cstdint>
 #include <cstdlib>
-#include <opencv2/opencv.hpp>
+
 
 //parameter setting
 static const unsigned W = 800;
 static const unsigned H = 450;
-static const unsigned NFRAME = 960;
-static const int ANGLE = 1;
-static const int octs = 5;
+static const unsigned NFRAME = 1200;
+static const int ANGLE = 3;
+static const int octs = 4;
 
-static const double freq = (double)1/(double)96;
+static const double freq = (double)1/(double)120;
 
-// two colors to interpolate
-static const double Y0 = 119;
-static const double U0 = 95;
-static const double V0 = 225;
-static const double Y1 = 239;
-static const double U1 = 117;
-static const double V1 = 139;
+static const double Y1 = 120;
+static const double U1 = 95;
+static const double V1 = 225;
+static const double Y2 = 240;
+static const double U2 = 120;
+static const double V2 = 150;
 
 //define const
 #define PI 3.14159265
-#define E 2.71828182
 
 
  __device__ double dirs[256][2]; 
 
+ //perlin table
  __device__ int perm[256] = { 151,160,137,91,90,15, 
 		131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23, 
 		190, 6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33, 
@@ -55,9 +54,11 @@ __device__ double power( double x, int y)
 
 __device__ double dblAbs(double x)
 {
-	double y;
-	if( x < 0 )? y = -x: y = x;
-	return y;
+	if( x < 0 )
+	{
+		return -x;
+	}
+	return x;
 }
 
 // find the weights of 4 corners
@@ -109,7 +110,6 @@ __global__ void initdirs()
 	dirs[idx][1] = sin((idx * 2.0 * PI)/256.0);
 }
 
-// interpolate two colors
 __global__ void linearInter(double *douimgptr, double C0, double C1, uint8_t *intimgptr, int r)
 {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -122,7 +122,6 @@ __global__ void linearInter(double *douimgptr, double C0, double C1, uint8_t *in
 	}
 }
 
-// paint N colors, the color painted is decided by the rate between 0-1
 __global__ void NColor(double *douimgptr, double *colorListGPU, uint8_t *intimgptr, int r, int cstart, int cN)
 {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -155,7 +154,7 @@ void Lab2VideoGenerator::get_info(Lab2VideoInfo &info)
 	info.w = W;
 	info.h = H;
 	info.n_frame = NFRAME;
-	info.fps_n = 96;
+	info.fps_n = 120;
 	info.fps_d = 1;
 };
 
@@ -168,15 +167,15 @@ void Lab2VideoGenerator::Generate(uint8_t *yuv)
 	
 	uint8_t *intimgptr;
 	cudaMalloc((void **) &intimgptr, H*W*sizeof(uint8_t));
-	linearInter<<<((H*W)/32)+1, 32>>>(douimgptr, Y0, Y1, intimgptr, 1);
+	linearInter<<<((H*W)/32)+1, 32>>>(douimgptr, Y1, Y2, intimgptr, 1);
 	cudaMemcpy(yuv, intimgptr, H*W, cudaMemcpyDeviceToDevice); 
 	cudaDeviceSynchronize();
 
-	linearInter<<<((H*W)/32)+1, 32>>>(douimgptr, U0, U1, intimgptr, 2);
+	linearInter<<<((H*W)/32)+1, 32>>>(douimgptr, U1, U2, intimgptr, 2);
 	cudaMemcpy(yuv+(H*W), intimgptr, H*W/4, cudaMemcpyDeviceToDevice);
 	cudaDeviceSynchronize();
 
-	linearInter<<<((H*W)/32)+1, 32>>>(douimgptr, V0, V1, intimgptr, 2);
+	linearInter<<<((H*W)/32)+1, 32>>>(douimgptr, V1, V2, intimgptr, 2);
 	cudaMemcpy(yuv+(H*W)+(H*W)/4, intimgptr, H*W/4, cudaMemcpyDeviceToDevice);
 	cudaDeviceSynchronize();
 
