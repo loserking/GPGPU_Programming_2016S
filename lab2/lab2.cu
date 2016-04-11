@@ -11,9 +11,7 @@ static const unsigned H = 450;
 static const unsigned NFRAME = 1200;
 static const int ANGLE = 3;
 static const int octs = 4;
-
 static const double freq = (double)1/(double)120;
-
 static const double Y1 = 120;
 static const double U1 = 95;
 static const double V1 = 225;
@@ -42,6 +40,7 @@ static const double V2 = 150;
 		49,192,214, 31,181,199,106,157,184, 84,204,176,115,121,50,45,127, 4,150,254, 
 		138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180 };
 
+//power function
 __device__ double power( double x, int y)
 {
 	double ans = 1;
@@ -52,7 +51,8 @@ __device__ double power( double x, int y)
 	return ans;
 }
 
-__device__ double dblAbs(double x)
+//absolute value function
+__device__ double Abs(double x)
 {
 	if( x < 0 )
 	{
@@ -61,7 +61,6 @@ __device__ double dblAbs(double x)
 	return x;
 }
 
-// find the weights of 4 corners
 __device__ double Corners4(double x, double y, int perX, int perY, int c, int f)
 {
 	
@@ -78,9 +77,9 @@ __device__ double Corners4(double x, double y, int perX, int perY, int c, int f)
 
 __device__ double perlin(double x, double y, int perX, int perY, int f)
 {
-	double ans = 0;
-	for(int i=0;i<4;i++)
-	{ //4 corners
+	double ans = 0;//initial
+	for(int i = 0; i < 4; i++)
+	{ 
 		ans += Corners4(x, y, perX, perY, i, f);
 	}
 	return ans;
@@ -99,7 +98,6 @@ __global__ void pixelRate(int f, double *douimgptr)
 	{
 		ans += power(0.5, i) * perlin(x*power(2, i), y*power(2, i), perX*power(2, i), perY*power(2, i), f);
 	}
-	
 	douimgptr[yint*W + xint] = (1/2.0)*ans + (1/2.0); //0-1
 }
 
