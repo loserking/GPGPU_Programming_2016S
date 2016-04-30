@@ -1,0 +1,34 @@
+# temperary files
+*.tmp
+
+# executables/objects/link files/debug files
+*.exe
+*.obj
+*.ilk
+*.pdb
+*.idb
+
+#log files
+*.log
+*.tlog
+
+# database files
+*.sdf
+
+# documents
+*.doc
+*.docx
+
+# ignore waveform files
+*.vcd
+
+# ignore projects files
+*.suo
+*.vcxproj*
+*.filters
+*.sln
+
+# ignore compressed files
+*.rar
+*.zip
+*.tar
