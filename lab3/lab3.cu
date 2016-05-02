@@ -10,9 +10,12 @@ __global__ void CalculateFixed(
 	const float *target,
 	const float *mask,
 	float *output, 
+	const int wb,
+	const int hb,
 	const int wt, 
-	const int ht
-		
+	const int ht,
+	const int oy,
+	const int ox	
 )
 {
 	const int xt = blockIdx.x * blockDim.x + threadIdx.x;
