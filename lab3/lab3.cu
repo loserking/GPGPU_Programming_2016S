@@ -166,7 +166,7 @@ void PoissonImageCloning(
 	//timer start	
 	Timer timer;
 	timer.Start();
-	
+	float w = 1;
 	//SOR
 	for (int i = 0; i < 10; i++)
 	{
@@ -208,6 +208,7 @@ void PoissonImageCloning(
 	//print timer
 	timer.Pause();
 	printf_timer(timer);
+	
 	// copy the image back
 	cudaMemcpy(output, background, wb*hb*sizeof(float)*3, cudaMemcpyDeviceToDevice);
 	SimpleClone<<<dim3(CeilDiv(wt,32), CeilDiv(ht,16)), dim3(32,16)>>>(
