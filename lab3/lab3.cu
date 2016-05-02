@@ -34,8 +34,8 @@ __global__ void CalculateFixed(
 	temp[2] = 4*target[3*curt+2];
 	for(int i = 0;i < 4;i++)
 	{	//declare neighbor coordinate
-		const int nx = idx + dir[i][0];
-		const int ny = idy + dir[i][0];
+		const int nx = xt + dir[i][0];
+		const int ny = yt + dir[i][0];
 		const int curn = wt*ny + nx;
 		if (nx >= 0 && ny >= 0 && nx < wt && ny < ht) {//inside boundry
        temp[0] -= target[3*curn + 0];
