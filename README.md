@@ -7,5 +7,7 @@ Please make sure your version is ahead of b7175ef.
 # Lab 2
 Under constructing
 
+#Lab 3
+
 # Git
 If you are not familiar with Git, [this](http://backlogtool.com/git-guide/tw/intro/intro1_1.html) is the tutorial.
